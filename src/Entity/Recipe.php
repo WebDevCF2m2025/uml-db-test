@@ -11,19 +11,27 @@ class Recipe
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    # ajout du unsigned
+    #[ORM\Column(options:
+        [
+            'unsigned' => true
+        ])]
     private ?int $id = null;
 
     #[ORM\Column(length: 120)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 125)]
+    # champ unique
+    #[ORM\Column(length: 125, unique: true)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
 
-    #[ORM\Column(nullable: true)]
+    # temps actuel à l'insertion
+    #[ORM\Column(nullable: true, options:[
+        'default' => 'CURRENT_TIMESTAMP',
+    ])]
     private ?\DateTimeImmutable $dateCreated = null;
 
     public function getId(): ?int

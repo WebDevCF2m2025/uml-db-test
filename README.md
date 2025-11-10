@@ -46,4 +46,89 @@ doctrine:
         auto_mapping: true
 ```
 
+### Création de la base de donnée :
 
+```bash
+php bin/console doctrine:database:create
+```
+
+### Création de la première entité :
+```bash
+php bin/console make:entity Recipe
+# puis les champs désirés
+```
+
+2 fichiers sont créés :
+- `src/Entity/Recipe.php` (propriétés + getters et setters)
+- `src/Repository/RecipeRepository.php` (Manager de Recipe)
+
+Création de la première migration :
+
+```bash
+php bin/console make:migration
+```
+
+Puis migration vers la DB :
+
+```bash
+php bin/console doctrine:migrations:migrate
+```
+
+Puis 'yes'.
+
+La première table est créée, mais elle ne respecte pas tous les critères, nous pouvons la modifier :
+
+```php
+// src/Entity/Recipe.php
+# ...
+#[ORM\Entity(repositoryClass: RecipeRepository::class)]
+class Recipe
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    # ajout du unsigned
+    #[ORM\Column(options: 
+    [
+        'unsigned' => true
+    ])]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 120)]
+    private ?string $title = null;
+    
+    # champ unique
+    #[ORM\Column(length: 125, unique: true)]
+    private ?string $slug = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $text = null;
+
+    # temps actuel à l'insertion
+    #[ORM\Column(nullable: true, options:
+    [
+        'default' => 'CURRENT_TIMESTAMP',
+    ])]
+    private ?\DateTimeImmutable $dateCreated = null;
+#...
+```
+
+### On régénère les setters et getters
+
+```bash
+php bin/console make:entity --regenerate
+# puis enter
+```
+
+Création de la deuxième migration :
+
+```bash
+php bin/console make:migration
+```
+
+Puis migration vers la DB :
+
+```bash
+php bin/console doctrine:migrations:migrate
+```
+
+Puis 'yes'.
